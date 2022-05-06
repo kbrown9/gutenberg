@@ -210,7 +210,13 @@ function gutenberg_render_layout_support_flag( $block_content, $block ) {
 	$class_names     = gutenberg_get_layout_classes( $block['attrs'] );
 	$class_names[]   = $container_class;
 
-	$gap_value = _wp_array_get( $block, array( 'attrs', 'style', 'spacing', 'blockGap' ) );
+	if ( isset( $used_layout['type'] ) ) {
+		$class_names[] = 'is-layout-' . sanitize_title( $used_layout['type'] );
+	} else {
+		$class_names[] = 'is-layout-flow';
+	}
+
+	$gap_value  = _wp_array_get( $block, array( 'attrs', 'style', 'spacing', 'blockGap' ) );
 	// Skip if gap value contains unsupported characters.
 	// Regex for CSS value borrowed from `safecss_filter_attr`, and used here
 	// because we only want to match against the value, not the CSS attribute.

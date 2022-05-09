@@ -258,10 +258,12 @@ export const withLayoutStyles = createHigherOrderComponent(
 		const layoutClasses = shouldRenderLayoutStyles
 			? getLayoutClasses( attributes )
 			: null;
+		const layoutType = usedLayout?.type || 'flow';
 		const className = classnames(
 			props?.className,
 			{
 				[ `wp-container-${ id }` ]: shouldRenderLayoutStyles,
+				[ `is-layout-${ layoutType }` ]: true,
 			},
 			layoutClasses
 		);
@@ -273,7 +275,9 @@ export const withLayoutStyles = createHigherOrderComponent(
 					createPortal(
 						<LayoutStyle
 							blockName={ name }
-							selector={ `.wp-container-${ id }` }
+							selector={ `${
+								props?.className || '' // TODO: It seems the block className isn't really available here.
+							}.wp-container-${ id }` }
 							layout={ usedLayout }
 							style={ attributes?.style }
 						/>,

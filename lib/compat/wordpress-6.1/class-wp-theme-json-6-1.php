@@ -436,6 +436,9 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 		}
 
 		return $block_rules;
+	}
+
+	/**
 	 * Given a selector and a declaration list,
 	 * creates the corresponding ruleset.
 	 *

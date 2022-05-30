@@ -405,6 +405,19 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 			$block_rules     .= static::to_ruleset( $selector_duotone, $declarations_duotone );
 		}
 
+		// 4. Generate Layout block gap styles.
+		$has_block_gap_support = _wp_array_get( $this->theme_json, array( 'settings', 'spacing', 'blockGap' ) ) !== null;
+		$has_block_gap_value   = _wp_array_get( $node, array( 'spacing', 'blockGap' ), false );
+
+		if (
+			static::ROOT_BLOCK_SELECTOR !== $selector &&
+			$has_block_gap_support &&
+			$has_block_gap_value &&
+			! empty( $metadata['name'] )
+		) {
+			$block_rules .= $this->get_layout_styles( $metadata );
+		}
+
 		if ( static::ROOT_BLOCK_SELECTOR === $selector ) {
 			$block_rules .= '.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }';
 			$block_rules .= '.wp-site-blocks > .alignright { float: right; margin-left: 2em; }';

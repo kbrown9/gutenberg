@@ -29,7 +29,7 @@ import { __unstablePresetDuotoneFilter as PresetDuotoneFilter } from '@wordpress
 /**
  * Internal dependencies
  */
-import { LAYOUT_STYLES, PRESET_METADATA, ROOT_BLOCK_SELECTOR } from './utils';
+import { PRESET_METADATA, ROOT_BLOCK_SELECTOR } from './utils';
 import { GlobalStylesContext } from './context';
 import { useSetting } from './hooks';
 
@@ -358,7 +358,7 @@ export const toCustomProperties = ( tree, blockSelectors ) => {
 };
 
 export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
-	const nodesWithStyles = getNodesWithStyles( tree, blockSelectors );
+	const nodesWithStyles = getNodesWithStyles( tree, blockSelectors ); // Maybe this should include the block name if present?
 	const nodesWithSettings = getNodesWithSettings( tree, blockSelectors );
 
 	/*
@@ -389,16 +389,20 @@ export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
 		}
 
 		// Process blockGap styles.
-		if ( styles?.spacing?.blockGap ) {
-			const gapValue = styles.spacing.blockGap;
-			delete styles.spacing.blockGap;
-			Object.entries( LAYOUT_STYLES[ '--wp--style--block-gap' ] ).forEach(
-				( [ additionalSelector, cssProperty ] ) => {
-					const combinedSelector =
-						selector === ROOT_BLOCK_SELECTOR
-							? `${ selector } ${ additionalSelector }`
-							: `${ selector }${ additionalSelector }`;
-					ruleset += `${ combinedSelector } { ${ cssProperty }: ${ gapValue }; }`;
+		if (
+			styles?.spacing?.blockGap &&
+			tree?.settings?.layout?.definitions
+		) {
+			Object.entries( tree.settings.layout.definitions ).forEach(
+				( [ , { blockGapProp, blockGapSelector } ] ) => {
+					if ( blockGapProp && blockGapSelector ) {
+						const gapValue = styles.spacing.blockGap;
+						const combinedSelector =
+							selector === ROOT_BLOCK_SELECTOR
+								? `${ selector } ${ blockGapSelector }`
+								: `${ selector }${ blockGapSelector }`;
+						ruleset += `${ combinedSelector } { ${ blockGapProp }: ${ gapValue }; }`;
+					}
 				}
 			);
 		}
@@ -423,12 +427,14 @@ export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
 		'.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }';
 
 	if ( hasBlockGapSupport ) {
+		// TODO: How do we correctly support different fallback values?
+		const gapValue = tree?.styles?.spacing?.blockGap ?? '0.5em';
 		ruleset =
 			ruleset +
 			'.wp-site-blocks > * { margin-block-start: 0; margin-block-end: 0; }';
 		ruleset =
 			ruleset +
-			'.wp-site-blocks > * + * { margin-block-start: var( --wp--style--block-gap ); }';
+			`.wp-site-blocks > * + * { margin-block-start: ${ gapValue }; }`;
 	}
 
 	nodesWithSettings.forEach( ( { selector, presets } ) => {

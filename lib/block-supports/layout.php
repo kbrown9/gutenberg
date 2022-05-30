@@ -75,7 +75,7 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 			// TODO: Ensure that theme.json is outputting the default gap that used to be rendered via: var( --wp--style--block-gap, 0.5em )
 			if ( $gap_value && ! $should_skip_gap_serialization ) {
 				$style .= "$selector > * { margin-block-start: 0; margin-block-end: 0; }";
-				$style .= "$selector > * + * { margin-block-start: $gap_style; margin-block-end: 0; }";
+				$style .= "$selector > * + * { margin-block-start: $gap_value; margin-block-end: 0; }";
 			}
 		}
 	} elseif ( 'flex' === $layout_type ) {

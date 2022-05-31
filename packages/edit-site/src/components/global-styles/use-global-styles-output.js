@@ -393,14 +393,18 @@ export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
 			styles?.spacing?.blockGap &&
 			tree?.settings?.layout?.definitions
 		) {
-			Object.entries( tree.settings.layout.definitions ).forEach(
-				( [ , { blockGapProp, blockGapSelector } ] ) => {
-					if ( blockGapProp && blockGapSelector ) {
+			Object.values( tree.settings.layout.definitions ).forEach(
+				( { className, blockGapProp, blockGapSelector } ) => {
+					if (
+						[ className, blockGapProp, blockGapSelector ].every(
+							( val ) => typeof val === 'string'
+						)
+					) {
 						const gapValue = styles.spacing.blockGap;
 						const combinedSelector =
 							selector === ROOT_BLOCK_SELECTOR
-								? `${ selector } ${ blockGapSelector }`
-								: `${ selector }${ blockGapSelector }`;
+								? `${ selector } .${ className }${ blockGapSelector }`
+								: `${ selector }.${ className }${ blockGapSelector }`;
 						ruleset += `${ combinedSelector } { ${ blockGapProp }: ${ gapValue }; }`;
 					}
 				}

@@ -262,12 +262,16 @@ export const withLayoutStyles = createHigherOrderComponent(
 		const layoutClasses = shouldRenderLayoutStyles
 			? getLayoutClasses( attributes )
 			: null;
-		const layoutType = usedLayout?.type || 'flow';
+		const layoutType = usedLayout?.type || 'default';
+		const layoutClassName =
+			defaultThemeLayout?.definitions?.[ layoutType ]?.className || '';
+
+		// Attach a `wp-container-` id-based class name as well as a layout class name such as `is-layout-flex`.
 		const className = classnames(
 			props?.className,
 			{
 				[ `wp-container-${ id }` ]: shouldRenderLayoutStyles,
-				[ `is-layout-${ layoutType }` ]: true,
+				[ layoutClassName ]: shouldRenderLayoutStyles,
 			},
 			layoutClasses
 		);

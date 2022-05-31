@@ -110,8 +110,10 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 				$gap_column = isset( $gap_value['left'] ) ? $gap_value['left'] : $fallback_gap_value;
 				$gap_value  = $gap_row === $gap_column ? $gap_row : $gap_row . ' ' . $gap_column;
 			}
-			$gap_style = $gap_value && ! $should_skip_gap_serialization ? $gap_value : "var( --wp--style--block-gap, $fallback_gap_value )";
-			$style    .= "gap: $gap_style;";
+			// TODO: Ensure that theme.json is outputting the default gap that used to be rendered via: var( --wp--style--block-gap, 0.5em )
+			if ( $gap_value && ! $should_skip_gap_serialization ) {
+				$style .= "gap: $gap_value;";
+			}
 		} else {
 			$style .= "gap: $fallback_gap_value;";
 		}

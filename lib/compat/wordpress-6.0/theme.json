@@ -188,17 +188,17 @@
 		"layout": {
 			"definitions": {
 				"default": {
-					"name": "flow",
+					"name": "default",
 					"slug": "flow",
 					"className": "is-layout-flow",
-					"blockGapSelector": ".is-layout-flow > * + *",
+					"blockGapSelector": " > * + *",
 					"blockGapProp": "margin-top"
 				},
 				"flex": {
 					"name": "flex",
 					"slug": "flex",
 					"className": "is-layout-flex",
-					"blockGapSelector": ".is-layout-flex",
+					"blockGapSelector": "",
 					"blockGapProp": "gap"
 				}
 			}

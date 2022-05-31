@@ -475,27 +475,36 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 		$block_rules           = '';
 		$selector              = isset( $block_metadata['selector'] ) ? $block_metadata['selector'] : '';
 		$has_block_gap_support = _wp_array_get( $this->theme_json, array( 'settings', 'spacing', 'blockGap' ) ) !== null;
+		$node                  = _wp_array_get( $this->theme_json, $block_metadata['path'], array() );
+
 		// TODO: We might still need to output rules if blockGap isn't enabled — for example, for fallback gap on flex layout blocks.
 		if ( $has_block_gap_support ) {
-			if ( static::ROOT_BLOCK_SELECTOR === $selector ) {
-				$block_gap_value = _wp_array_get( $this->theme_json, array( 'styles', 'spacing', 'blockGap' ), '0.5em' );
-			} else {
-				$block_gap_value = _wp_array_get( $block_metadata, array( 'spacing', 'blockGap' ), '0.5em' );
-			}
-
+			$block_gap_value    = _wp_array_get( $node, array( 'spacing', 'blockGap' ), '0.5em' );
 			$layout_definitions = _wp_array_get( $this->theme_json, array( 'settings', 'layout', 'definitions' ), array() );
 
 			if ( $block_gap_value ) {
 				foreach( $layout_definitions as $layout_key => $layout_definition ) {
 					$declaration_layouts = array();
-					if( ! empty( $layout_definition['blockGapSelector'] ) && ! empty( $layout_definition['blockGapProp'] ) ) {
+					$class_name          = _wp_array_get( $layout_definition, array( 'className' ), false );
+					$block_gap_selector  = _wp_array_get( $layout_definition, array( 'blockGapSelector' ), '' );
+					$block_gap_prop      = _wp_array_get( $layout_definition, array( 'blockGapProp' ), false );
+
+					if (
+						is_string( $class_name ) &&
+						is_string( $block_gap_prop ) &&
+						is_string( $block_gap_selector )
+					) {
 						$declaration_layouts[] = array(
-							'name'  => $layout_definition['blockGapProp'],
+							'name'  => $block_gap_prop,
 							'value' => $block_gap_value,
 						);
-						$layout_selector = static::ROOT_BLOCK_SELECTOR === $selector ?
-							$selector . ' ' . $layout_definition['blockGapSelector'] :
-							$selector . $layout_definition['blockGapSelector'];
+						$format = static::ROOT_BLOCK_SELECTOR === $selector ? '%s .%s%s' : '%s.%s%s';
+						$layout_selector = sprintf(
+							$format,
+							$selector,
+							$class_name,
+							$block_gap_selector
+						);
 						$block_rules    .= static::to_ruleset( $layout_selector, $declaration_layouts );
 					}
 				}

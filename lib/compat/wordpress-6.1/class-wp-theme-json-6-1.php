@@ -479,7 +479,15 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 
 		// TODO: We might still need to output rules if blockGap isn't enabled — for example, for fallback gap on flex layout blocks.
 		if ( $has_block_gap_support ) {
-			$block_gap_value    = _wp_array_get( $node, array( 'spacing', 'blockGap' ), '0.5em' );
+			$fallback_gap_value = '0.5em';
+			$block_gap_value    = _wp_array_get( $node, array( 'spacing', 'blockGap' ), $fallback_gap_value );
+
+			// Support split row / column values and concatenate to a shorthand value.
+			if ( is_array( $block_gap_value ) ) {
+				$gap_row         = isset( $block_gap_value['top'] ) ? $block_gap_value['top'] : $fallback_gap_value;
+				$gap_column      = isset( $block_gap_value['left'] ) ? $block_gap_value['left'] : $fallback_gap_value;
+				$block_gap_value = $gap_row === $gap_column ? $gap_row : $gap_row . ' ' . $gap_column;
+			}
 			$layout_definitions = _wp_array_get( $this->theme_json, array( 'settings', 'layout', 'definitions' ), array() );
 
 			if ( $block_gap_value ) {

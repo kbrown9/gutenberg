@@ -24,7 +24,10 @@ import {
 } from '@wordpress/blocks';
 import { useEffect, useState, useContext } from '@wordpress/element';
 import { getCSSRules } from '@wordpress/style-engine';
-import { __unstablePresetDuotoneFilter as PresetDuotoneFilter } from '@wordpress/block-editor';
+import {
+	__unstablePresetDuotoneFilter as PresetDuotoneFilter,
+	__experimentalGetGapCSSValue as getGapCSSValue,
+} from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
@@ -389,10 +392,12 @@ export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
 		}
 
 		// Process blockGap styles.
+		let gapValue = styles?.spacing?.blockGap;
 		if (
-			styles?.spacing?.blockGap &&
+			typeof gapValue !== undefined &&
 			tree?.settings?.layout?.definitions
 		) {
+			gapValue = getGapCSSValue( gapValue, '0.5em' );
 			Object.values( tree.settings.layout.definitions ).forEach(
 				( { className, blockGapProp, blockGapSelector } ) => {
 					if (
@@ -400,7 +405,6 @@ export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
 							( val ) => typeof val === 'string'
 						)
 					) {
-						const gapValue = styles.spacing.blockGap;
 						const combinedSelector =
 							selector === ROOT_BLOCK_SELECTOR
 								? `${ selector } .${ className }${ blockGapSelector }`
@@ -409,6 +413,10 @@ export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
 					}
 				}
 			);
+			// For backwards compatibility, ensure the legacy block gap CSS variable is still available.
+			if ( selector === ROOT_BLOCK_SELECTOR ) {
+				ruleset += `${ selector } { --wp--style--block-gap: ${ gapValue }; }`;
+			}
 		}
 
 		// Process the remaning block styles (they use either normal block class or __experimentalSelector).
@@ -432,7 +440,10 @@ export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
 
 	if ( hasBlockGapSupport ) {
 		// TODO: How do we correctly support different fallback values?
-		const gapValue = tree?.styles?.spacing?.blockGap ?? '0.5em';
+		const gapValue = getGapCSSValue(
+			tree?.styles?.spacing?.blockGap,
+			'0.5em'
+		);
 		ruleset =
 			ruleset +
 			'.wp-site-blocks > * { margin-block-start: 0; margin-block-end: 0; }';

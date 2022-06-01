@@ -72,7 +72,7 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 			if ( is_array( $gap_value ) ) {
 				$gap_value = isset( $gap_value['top'] ) ? $gap_value['top'] : null;
 			}
-			// TODO: Ensure that theme.json is outputting the default gap that used to be rendered via: var( --wp--style--block-gap, 0.5em )
+			// TODO: Ensure that theme.json is outputting the default gap that used to be rendered via: var( --wp--style--block-gap, 0.5em ).
 			if ( $gap_value && ! $should_skip_gap_serialization ) {
 				$style .= "$selector > * { margin-block-start: 0; margin-block-end: 0; }";
 				$style .= "$selector > * + * { margin-block-start: $gap_value; margin-block-end: 0; }";
@@ -110,7 +110,7 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 				$gap_column = isset( $gap_value['left'] ) ? $gap_value['left'] : $fallback_gap_value;
 				$gap_value  = $gap_row === $gap_column ? $gap_row : $gap_row . ' ' . $gap_column;
 			}
-			// TODO: Ensure that theme.json is outputting the default gap that used to be rendered via: var( --wp--style--block-gap, 0.5em )
+			// TODO: Ensure that theme.json is outputting the default gap that used to be rendered via: var( --wp--style--block-gap, 0.5em ).
 			if ( $gap_value && ! $should_skip_gap_serialization ) {
 				$style .= "gap: $gap_value;";
 			}
@@ -211,7 +211,7 @@ function gutenberg_render_layout_support_flag( $block_content, $block ) {
 		$used_layout = $default_layout;
 	}
 
-	// TODO: Should we handle the case where a block has opted out of using a classname? (e.g. how paragraph disables classnames)
+	// TODO: Should we handle the case where a block has opted out of using a classname? (e.g. how paragraph disables classnames).
 	$block_classname  = wp_get_block_default_classname( $block['blockName'] );
 	$container_class  = wp_unique_id( 'wp-container-' );
 	$class_names      = gutenberg_get_layout_classes( $block['attrs'] );
@@ -228,7 +228,7 @@ function gutenberg_render_layout_support_flag( $block_content, $block ) {
 		$class_names[] = sanitize_title( $layout_classname );
 	}
 
-	$gap_value  = _wp_array_get( $block, array( 'attrs', 'style', 'spacing', 'blockGap' ) );
+	$gap_value = _wp_array_get( $block, array( 'attrs', 'style', 'spacing', 'blockGap' ) );
 	// Skip if gap value contains unsupported characters.
 	// Regex for CSS value borrowed from `safecss_filter_attr`, and used here
 	// because we only want to match against the value, not the CSS attribute.

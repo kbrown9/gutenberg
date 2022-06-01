@@ -492,7 +492,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 
 			if ( $block_gap_value ) {
 				foreach ( $layout_definitions as $layout_definition ) {
-					$declaration_layouts = array();
+					$declarations        = array();
 					$class_name          = _wp_array_get( $layout_definition, array( 'className' ), false );
 					$block_gap_selector  = _wp_array_get( $layout_definition, array( 'blockGapSelector' ), '' );
 					$block_gap_prop      = _wp_array_get( $layout_definition, array( 'blockGapProp' ), false );
@@ -502,7 +502,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 						is_string( $block_gap_prop ) &&
 						is_string( $block_gap_selector )
 					) {
-						$declaration_layouts[] = array(
+						$declarations[]  = array(
 							'name'  => $block_gap_prop,
 							'value' => $block_gap_value,
 						);
@@ -513,7 +513,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 							$class_name,
 							$block_gap_selector
 						);
-						$block_rules    .= static::to_ruleset( $layout_selector, $declaration_layouts );
+						$block_rules    .= static::to_ruleset( $layout_selector, $declarations );
 					}
 				}
 			}

@@ -491,7 +491,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 			$layout_definitions = _wp_array_get( $this->theme_json, array( 'settings', 'layout', 'definitions' ), array() );
 
 			if ( $block_gap_value ) {
-				foreach( $layout_definitions as $layout_key => $layout_definition ) {
+				foreach ( $layout_definitions as $layout_definition ) {
 					$declaration_layouts = array();
 					$class_name          = _wp_array_get( $layout_definition, array( 'className' ), false );
 					$block_gap_selector  = _wp_array_get( $layout_definition, array( 'blockGapSelector' ), '' );
@@ -506,7 +506,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 							'name'  => $block_gap_prop,
 							'value' => $block_gap_value,
 						);
-						$format = static::ROOT_BLOCK_SELECTOR === $selector ? '%s .%s%s' : '%s.%s%s';
+						$format          = static::ROOT_BLOCK_SELECTOR === $selector ? '%s .%s%s' : '%s.%s%s';
 						$layout_selector = sprintf(
 							$format,
 							$selector,

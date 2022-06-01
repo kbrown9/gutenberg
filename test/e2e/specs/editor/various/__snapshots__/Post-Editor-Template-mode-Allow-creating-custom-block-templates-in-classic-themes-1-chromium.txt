@@ -1,5 +1,5 @@
 
-<header class="wp-container-1 is-layout-flow wp-block-group"><div class="wp-block-group__inner-container"><h1 class="wp-block-site-title"><a href="http://localhost:8889" rel="home">Test Blog</a></h1>
+<header class="wp-container-1 is-layout-flow wp-block-group"><div class="wp-block-group__inner-container"><h1 class="wp-block-site-title"><a href="http://localhost:8889" rel="home">gutenberg</a></h1>
 
 <p class="wp-block-site-tagline">Just another WordPress site</p></div></header>
 

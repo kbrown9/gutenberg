@@ -520,12 +520,6 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 								$block_rules    .= static::to_ruleset( $layout_selector, $declarations );
 							}
 						}
-
-						$declarations[]  = array(
-							'name'  => $block_gap_prop,
-							'value' => $block_gap_value,
-						);
-
 					}
 				}
 			}

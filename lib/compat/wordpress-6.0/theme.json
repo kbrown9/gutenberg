@@ -191,15 +191,69 @@
 					"name": "default",
 					"slug": "flow",
 					"className": "is-layout-flow",
-					"blockGapSelector": " > * + *",
-					"blockGapProp": "margin-top"
+					"baseStyles": [
+						{
+							"selector": " > .alignleft",
+							"rules": {
+								"float": "left",
+								"margin-inline-start": 0,
+								"margin-inline-end": "2em"
+							}
+						},
+						{
+							"selector": " > .alignright",
+							"rules": {
+								"float": "right",
+								"margin-inline-start": "2em",
+								"margin-inline-end": "0"
+							}
+						},
+						{
+							"selector": " > .aligncenter",
+							"rules": {
+								"margin-left": "auto !important",
+								"margin-right": "auto !important"
+							}
+						}
+					],
+					"blockGapStyles": [
+						{
+							"selector": " > *",
+							"rules": {
+								"margin-block-start": "0",
+								"margin-block-end": "0"
+							}
+						},
+						{
+							"selector": " > * + *",
+							"rules": {
+								"margin-block-start": null,
+								"margin-block-end": "0"
+							}
+						}
+					]
 				},
 				"flex": {
 					"name": "flex",
 					"slug": "flex",
 					"className": "is-layout-flex",
-					"blockGapSelector": "",
-					"blockGapProp": "gap"
+					"baseStyles": [
+						{
+							"selector": "",
+							"rules": {
+								"display": "flex",
+								"flex-wrap": "wrap"
+							}
+						}
+					],
+					"blockGapStyles": [
+						{
+							"selector": "",
+							"rules": {
+								"gap": null
+							}
+						}
+					]
 				}
 			}
 		},

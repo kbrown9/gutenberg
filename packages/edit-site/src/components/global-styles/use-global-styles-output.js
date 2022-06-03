@@ -399,17 +399,37 @@ export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
 		) {
 			gapValue = getGapCSSValue( gapValue, '0.5em' );
 			Object.values( tree.settings.layout.definitions ).forEach(
-				( { className, blockGapProp, blockGapSelector } ) => {
-					if (
-						[ className, blockGapProp, blockGapSelector ].every(
-							( val ) => typeof val === 'string'
-						)
-					) {
-						const combinedSelector =
-							selector === ROOT_BLOCK_SELECTOR
-								? `${ selector } .${ className }${ blockGapSelector }`
-								: `${ selector }.${ className }${ blockGapSelector }`;
-						ruleset += `${ combinedSelector } { ${ blockGapProp }: ${ gapValue }; }`;
+				( { className, blockGapStyles } ) => {
+					if ( blockGapStyles?.length ) {
+						blockGapStyles.forEach( ( blockGapStyle ) => {
+							const declarations = [];
+
+							if ( blockGapStyle.rules ) {
+								Object.entries( blockGapStyle.rules ).forEach(
+									( [ cssProperty, cssValue ] ) => {
+										declarations.push(
+											`${ cssProperty }: ${
+												cssValue ? cssValue : gapValue
+											}`
+										);
+									}
+								);
+							}
+
+							if ( declarations.length ) {
+								const combinedSelector =
+									selector === ROOT_BLOCK_SELECTOR
+										? `${ selector } .${ className }${
+												blockGapStyle?.selector || ''
+										  }`
+										: `${ selector }.${ className }${
+												blockGapStyle?.selector || ''
+										  }`;
+								ruleset += `${ combinedSelector } { ${ declarations.join(
+									'; '
+								) } }`;
+							}
+						} );
 					}
 				}
 			);

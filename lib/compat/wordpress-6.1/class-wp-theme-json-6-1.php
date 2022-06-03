@@ -492,28 +492,40 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 
 			if ( $block_gap_value ) {
 				foreach ( $layout_definitions as $layout_definition ) {
-					$declarations        = array();
-					$class_name          = _wp_array_get( $layout_definition, array( 'className' ), false );
-					$block_gap_selector  = _wp_array_get( $layout_definition, array( 'blockGapSelector' ), '' );
-					$block_gap_prop      = _wp_array_get( $layout_definition, array( 'blockGapProp' ), false );
+					$class_name       = _wp_array_get( $layout_definition, array( 'className' ), false );
+					$block_gap_rules  = _wp_array_get( $layout_definition, array( 'blockGapStyles' ), array() );
 
 					if (
 						is_string( $class_name ) &&
-						is_string( $block_gap_prop ) &&
-						is_string( $block_gap_selector )
+						! empty( $block_gap_rules )
 					) {
+						foreach ( $block_gap_rules as $block_gap_rule ) {
+							$declarations = array();
+							if ( isset( $block_gap_rule['selector'] ) && ! empty( $block_gap_rule['rules'] ) ) {
+								// Iterate over each of the styling rules and substitute non-string values such as `null` with the real `blockGap` value.
+								foreach ( $block_gap_rule['rules'] as $css_property => $css_value ) {
+									$declarations[]  = array(
+										'name'  => $css_property,
+										'value' => is_string( $css_value ) ? $css_value : $block_gap_value,
+									);
+								}
+
+								$format          = static::ROOT_BLOCK_SELECTOR === $selector ? '%s .%s%s' : '%s.%s%s';
+								$layout_selector = sprintf(
+									$format,
+									$selector,
+									$class_name,
+									$block_gap_rule['selector']
+								);
+								$block_rules    .= static::to_ruleset( $layout_selector, $declarations );
+							}
+						}
+
 						$declarations[]  = array(
 							'name'  => $block_gap_prop,
 							'value' => $block_gap_value,
 						);
-						$format          = static::ROOT_BLOCK_SELECTOR === $selector ? '%s .%s%s' : '%s.%s%s';
-						$layout_selector = sprintf(
-							$format,
-							$selector,
-							$class_name,
-							$block_gap_selector
-						);
-						$block_rules    .= static::to_ruleset( $layout_selector, $declarations );
+
 					}
 				}
 			}

@@ -524,6 +524,41 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 				}
 			}
 		}
+
+		// Output base styles.
+		if ( static::ROOT_BLOCK_SELECTOR === $selector ) {
+			foreach ( $layout_definitions as $layout_definition ) {
+				$class_name       = _wp_array_get( $layout_definition, array( 'className' ), false );
+				$base_style_rules  = _wp_array_get( $layout_definition, array( 'baseStyles' ), array() );
+
+				if (
+					is_string( $class_name ) &&
+					! empty( $base_style_rules )
+				) {
+					foreach ( $base_style_rules as $base_style_rule ) {
+						$declarations = array();
+
+						if ( isset( $base_style_rule['selector'] ) && ! empty( $base_style_rule['rules'] ) ) {
+							foreach ( $base_style_rule['rules'] as $css_property => $css_value ) {
+								$declarations[]  = array(
+									'name'  => $css_property,
+									'value' => $css_value,
+								);
+							}
+
+							$format          = static::ROOT_BLOCK_SELECTOR === $selector ? '%s .%s%s' : '%s.%s%s';
+							$layout_selector = sprintf(
+								$format,
+								$selector,
+								$class_name,
+								$base_style_rule['selector']
+							);
+							$block_rules    .= static::to_ruleset( $layout_selector, $declarations );
+						}
+					}
+				}
+			}
+		}
 		return $block_rules;
 	}
 }

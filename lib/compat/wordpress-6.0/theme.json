@@ -242,7 +242,14 @@
 							"selector": "",
 							"rules": {
 								"display": "flex",
-								"flex-wrap": "wrap"
+								"flex-wrap": "wrap",
+								"align-items": "center"
+							}
+						},
+						{
+							"selector": " > *",
+							"rules": {
+								"margin": "0"
 							}
 						}
 					],

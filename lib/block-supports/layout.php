@@ -64,10 +64,6 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 			$style .= "$selector .alignfull { max-width: none; }";
 		}
 
-		$style .= "$selector > .alignleft { float: left; margin-inline-start: 0; margin-inline-end: 2em; }";
-		$style .= "$selector > .alignright { float: right; margin-inline-start: 2em; margin-inline-end: 0; }";
-		$style .= "$selector > .aligncenter { margin-left: auto !important; margin-right: auto !important; }";
-
 		if ( $has_block_gap_support ) {
 			if ( is_array( $gap_value ) ) {
 				$gap_value = isset( $gap_value['top'] ) ? $gap_value['top'] : null;
@@ -97,13 +93,10 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 			$justify_content_options += array( 'space-between' => 'space-between' );
 		}
 
-		$flex_wrap_options = array( 'wrap', 'nowrap' );
-		$flex_wrap         = ! empty( $layout['flexWrap'] ) && in_array( $layout['flexWrap'], $flex_wrap_options, true ) ?
-			$layout['flexWrap'] :
-			'wrap';
+		if ( ! empty( $layout['flexWrap'] ) && 'nowrap' === $layout['flexWrap'] ) {
+			$style .= "$selector { flex-wrap: nowrap; }";
+		}
 
-		$style  = "$selector {";
-		$style .= 'display: flex;';
 		if ( $has_block_gap_support ) {
 			if ( is_array( $gap_value ) ) {
 				$gap_row    = isset( $gap_value['top'] ) ? $gap_value['top'] : $fallback_gap_value;
@@ -112,13 +105,12 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 			}
 			// TODO: Ensure that theme.json is outputting the default gap that used to be rendered via: var( --wp--style--block-gap, 0.5em ).
 			if ( $gap_value && ! $should_skip_gap_serialization ) {
+				$style .= "$selector {";
 				$style .= "gap: $gap_value;";
+				$style .= "}";
 			}
-		} else {
-			$style .= "gap: $fallback_gap_value;";
 		}
 
-		$style .= "flex-wrap: $flex_wrap;";
 		if ( 'horizontal' === $layout_orientation ) {
 			/**
 			 * Add this style only if is not empty for backwards compatibility,
@@ -126,25 +118,26 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 			 * by custom css.
 			 */
 			if ( ! empty( $layout['justifyContent'] ) && array_key_exists( $layout['justifyContent'], $justify_content_options ) ) {
+				$style .= "$selector {";
 				$style .= "justify-content: {$justify_content_options[ $layout['justifyContent'] ]};";
+				$style .= "}";
 			}
 
 			if ( ! empty( $layout['verticalAlignment'] ) && array_key_exists( $layout['verticalAlignment'], $vertical_alignment_options ) ) {
+				$style .= "$selector {";
 				$style .= "align-items: {$vertical_alignment_options[ $layout['verticalAlignment'] ]};";
-			} else {
-				$style .= 'align-items: center;';
+				$style .= "}";
 			}
 		} else {
+			$style .= "$selector {";
 			$style .= 'flex-direction: column;';
 			if ( ! empty( $layout['justifyContent'] ) && array_key_exists( $layout['justifyContent'], $justify_content_options ) ) {
 				$style .= "align-items: {$justify_content_options[ $layout['justifyContent'] ]};";
 			} else {
 				$style .= 'align-items: flex-start;';
 			}
+			$style .= "}";
 		}
-		$style .= '}';
-
-		$style .= "$selector > * { margin: 0; }";
 	}
 
 	return $style;
@@ -246,6 +239,13 @@ function gutenberg_render_layout_support_flag( $block_content, $block ) {
 	// don't apply the user-defined value to the styles.
 	$should_skip_gap_serialization = gutenberg_should_skip_block_supports_serialization( $block_type, 'spacing', 'blockGap' );
 	$style                         = gutenberg_get_layout_style( ".$block_classname.$container_class", $used_layout, $has_block_gap_support, $gap_value, $should_skip_gap_serialization, $fallback_gap_value );
+
+	// Only add container class and enqueue block support styles if unique styles were generated.
+	if ( ! empty( $style) ) {
+		$class_names[] = $container_class;
+		gutenberg_enqueue_block_support_styles( $style );
+	}
+
 	// This assumes the hook only applies to blocks with a single wrapper.
 	// I think this is a reasonable limitation for that particular hook.
 	$content = preg_replace(
@@ -254,8 +254,6 @@ function gutenberg_render_layout_support_flag( $block_content, $block ) {
 		$block_content,
 		1
 	);
-
-	gutenberg_enqueue_block_support_styles( $style );
 
 	return $content;
 }

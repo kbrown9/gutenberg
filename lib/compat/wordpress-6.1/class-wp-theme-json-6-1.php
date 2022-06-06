@@ -476,6 +476,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 		$selector              = isset( $block_metadata['selector'] ) ? $block_metadata['selector'] : '';
 		$has_block_gap_support = _wp_array_get( $this->theme_json, array( 'settings', 'spacing', 'blockGap' ) ) !== null;
 		$node                  = _wp_array_get( $this->theme_json, $block_metadata['path'], array() );
+		$layout_definitions    = _wp_array_get( $this->theme_json, array( 'settings', 'layout', 'definitions' ), array() );
 
 		// TODO: We might still need to output rules if blockGap isn't enabled — for example, for fallback gap on flex layout blocks.
 		if ( $has_block_gap_support ) {
@@ -488,7 +489,6 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 				$gap_column      = isset( $block_gap_value['left'] ) ? $block_gap_value['left'] : $fallback_gap_value;
 				$block_gap_value = $gap_row === $gap_column ? $gap_row : $gap_row . ' ' . $gap_column;
 			}
-			$layout_definitions = _wp_array_get( $this->theme_json, array( 'settings', 'layout', 'definitions' ), array() );
 
 			if ( $block_gap_value ) {
 				foreach ( $layout_definitions as $layout_definition ) {

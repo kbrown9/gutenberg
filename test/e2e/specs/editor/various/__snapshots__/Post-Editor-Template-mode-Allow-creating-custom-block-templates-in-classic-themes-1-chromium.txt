@@ -1,5 +1,5 @@
 
-<header class="wp-container-1 is-layout-flow wp-block-group"><div class="wp-block-group__inner-container"><h1 class="wp-block-site-title"><a href="http://localhost:8889" rel="home">gutenberg</a></h1>
+<header class="is-layout-flow wp-block-group"><div class="wp-block-group__inner-container"><h1 class="wp-block-site-title"><a href="http://localhost:8889" rel="home">gutenberg</a></h1>
 
 <p class="wp-block-site-tagline">Just another WordPress site</p></div></header>
 
@@ -9,11 +9,11 @@
 
 
 
-<main class="wp-container-4 is-layout-flow wp-block-group" id="wp--skip-link--target"><div class="wp-block-group__inner-container">
-<div class="wp-container-2 is-layout-flow wp-block-group"><div class="wp-block-group__inner-container"><h2 class="wp-block-post-title">Just an FSE Post</h2></div></div>
+<main class="is-layout-flow wp-block-group" id="wp--skip-link--target"><div class="wp-block-group__inner-container">
+<div class="is-layout-flow wp-block-group"><div class="wp-block-group__inner-container"><h2 class="wp-block-post-title">Just an FSE Post</h2></div></div>
 
 
-<div class="wp-container-3 is-layout-flow entry-content wp-block-post-content">
+<div class="is-layout-flow entry-content wp-block-post-content">
 <p>Hello World</p>
 </div></div></main>
 

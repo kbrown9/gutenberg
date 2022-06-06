@@ -292,6 +292,42 @@ function getLayoutStyles( tree, style, selector, hasBlockGapSupport ) {
 			ruleset += `${ selector } { --wp--style--block-gap: ${ gapValue }; }`;
 		}
 	}
+
+	// Output base styles
+	if (
+		selector === ROOT_BLOCK_SELECTOR &&
+		tree?.settings?.layout?.definitions
+	) {
+		Object.values( tree.settings.layout.definitions ).forEach(
+			( { className, baseStyles } ) => {
+				if ( baseStyles?.length ) {
+					baseStyles.forEach( ( baseStyle ) => {
+						const declarations = [];
+
+						if ( baseStyle.rules ) {
+							Object.entries( baseStyle.rules ).forEach(
+								( [ cssProperty, cssValue ] ) => {
+									declarations.push(
+										`${ cssProperty }: ${ cssValue }`
+									);
+								}
+							);
+						}
+
+						if ( declarations.length ) {
+							const combinedSelector = `${ selector } .${ className }${
+								baseStyle?.selector || ''
+							}`;
+							ruleset += `${ combinedSelector } { ${ declarations.join(
+								'; '
+							) } }`;
+						}
+					} );
+				}
+			}
+		);
+	}
+
 	return ruleset;
 }
 

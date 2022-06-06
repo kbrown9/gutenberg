@@ -234,6 +234,67 @@ function getStylesDeclarations( blockStyles = {} ) {
 	return output;
 }
 
+/**
+ * Get generated CSS for layout styles by looking up layout definitions provided
+ * in theme.json, and outputting common layout styles, and specific blockGap values.
+ *
+ * @param {Object}  tree               A theme.json tree containing layout definitions.
+ * @param {Object}  style              A style object containing spacing values.
+ * @param {string}  selector           Selector used to group together layout styling rules.
+ * @param {boolean} hasBlockGapSupport Whether or not the theme opts-in to blockGap support.
+ * @return {string} Generated CSS rules for the layout styles.
+ */
+function getLayoutStyles( tree, style, selector, hasBlockGapSupport ) {
+	let ruleset = '';
+	let gapValue = style?.spacing?.blockGap;
+	if (
+		typeof gapValue !== undefined &&
+		tree?.settings?.layout?.definitions
+	) {
+		gapValue = getGapCSSValue( gapValue, '0.5em' );
+		Object.values( tree.settings.layout.definitions ).forEach(
+			( { className, blockGapStyles } ) => {
+				if ( blockGapStyles?.length ) {
+					blockGapStyles.forEach( ( blockGapStyle ) => {
+						const declarations = [];
+
+						if ( blockGapStyle.rules ) {
+							Object.entries( blockGapStyle.rules ).forEach(
+								( [ cssProperty, cssValue ] ) => {
+									declarations.push(
+										`${ cssProperty }: ${
+											cssValue ? cssValue : gapValue
+										}`
+									);
+								}
+							);
+						}
+
+						if ( declarations.length ) {
+							const combinedSelector =
+								selector === ROOT_BLOCK_SELECTOR
+									? `${ selector } .${ className }${
+											blockGapStyle?.selector || ''
+									  }`
+									: `${ selector }.${ className }${
+											blockGapStyle?.selector || ''
+									  }`;
+							ruleset += `${ combinedSelector } { ${ declarations.join(
+								'; '
+							) } }`;
+						}
+					} );
+				}
+			}
+		);
+		// For backwards compatibility, ensure the legacy block gap CSS variable is still available.
+		if ( selector === ROOT_BLOCK_SELECTOR && hasBlockGapSupport ) {
+			ruleset += `${ selector } { --wp--style--block-gap: ${ gapValue }; }`;
+		}
+	}
+	return ruleset;
+}
+
 export const getNodesWithStyles = ( tree, blockSelectors ) => {
 	const nodes = [];
 
@@ -361,7 +422,7 @@ export const toCustomProperties = ( tree, blockSelectors ) => {
 };
 
 export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
-	const nodesWithStyles = getNodesWithStyles( tree, blockSelectors ); // Maybe this should include the block name if present?
+	const nodesWithStyles = getNodesWithStyles( tree, blockSelectors );
 	const nodesWithSettings = getNodesWithSettings( tree, blockSelectors );
 
 	/*
@@ -391,53 +452,13 @@ export const toStyles = ( tree, blockSelectors, hasBlockGapSupport ) => {
 				`${ duotoneSelector }{${ duotoneDeclarations.join( ';' ) };}`;
 		}
 
-		// Process blockGap styles.
-		let gapValue = styles?.spacing?.blockGap;
-		if (
-			typeof gapValue !== undefined &&
-			tree?.settings?.layout?.definitions
-		) {
-			gapValue = getGapCSSValue( gapValue, '0.5em' );
-			Object.values( tree.settings.layout.definitions ).forEach(
-				( { className, blockGapStyles } ) => {
-					if ( blockGapStyles?.length ) {
-						blockGapStyles.forEach( ( blockGapStyle ) => {
-							const declarations = [];
-
-							if ( blockGapStyle.rules ) {
-								Object.entries( blockGapStyle.rules ).forEach(
-									( [ cssProperty, cssValue ] ) => {
-										declarations.push(
-											`${ cssProperty }: ${
-												cssValue ? cssValue : gapValue
-											}`
-										);
-									}
-								);
-							}
-
-							if ( declarations.length ) {
-								const combinedSelector =
-									selector === ROOT_BLOCK_SELECTOR
-										? `${ selector } .${ className }${
-												blockGapStyle?.selector || ''
-										  }`
-										: `${ selector }.${ className }${
-												blockGapStyle?.selector || ''
-										  }`;
-								ruleset += `${ combinedSelector } { ${ declarations.join(
-									'; '
-								) } }`;
-							}
-						} );
-					}
-				}
-			);
-			// For backwards compatibility, ensure the legacy block gap CSS variable is still available.
-			if ( selector === ROOT_BLOCK_SELECTOR ) {
-				ruleset += `${ selector } { --wp--style--block-gap: ${ gapValue }; }`;
-			}
-		}
+		// Process blockGap and layout styles.
+		ruleset += getLayoutStyles(
+			tree,
+			styles,
+			selector,
+			hasBlockGapSupport
+		);
 
 		// Process the remaning block styles (they use either normal block class or __experimentalSelector).
 		const declarations = getStylesDeclarations( styles );

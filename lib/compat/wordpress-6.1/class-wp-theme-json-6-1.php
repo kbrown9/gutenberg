@@ -492,8 +492,8 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 
 			if ( $block_gap_value ) {
 				foreach ( $layout_definitions as $layout_definition ) {
-					$class_name       = _wp_array_get( $layout_definition, array( 'className' ), false );
-					$block_gap_rules  = _wp_array_get( $layout_definition, array( 'blockGapStyles' ), array() );
+					$class_name      = _wp_array_get( $layout_definition, array( 'className' ), false );
+					$block_gap_rules = _wp_array_get( $layout_definition, array( 'blockGapStyles' ), array() );
 
 					if (
 						is_string( $class_name ) &&
@@ -504,7 +504,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 							if ( isset( $block_gap_rule['selector'] ) && ! empty( $block_gap_rule['rules'] ) ) {
 								// Iterate over each of the styling rules and substitute non-string values such as `null` with the real `blockGap` value.
 								foreach ( $block_gap_rule['rules'] as $css_property => $css_value ) {
-									$declarations[]  = array(
+									$declarations[] = array(
 										'name'  => $css_property,
 										'value' => is_string( $css_value ) ? $css_value : $block_gap_value,
 									);
@@ -529,7 +529,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 		if ( static::ROOT_BLOCK_SELECTOR === $selector ) {
 			foreach ( $layout_definitions as $layout_definition ) {
 				$class_name       = _wp_array_get( $layout_definition, array( 'className' ), false );
-				$base_style_rules  = _wp_array_get( $layout_definition, array( 'baseStyles' ), array() );
+				$base_style_rules = _wp_array_get( $layout_definition, array( 'baseStyles' ), array() );
 
 				if (
 					is_string( $class_name ) &&
@@ -540,7 +540,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 
 						if ( isset( $base_style_rule['selector'] ) && ! empty( $base_style_rule['rules'] ) ) {
 							foreach ( $base_style_rule['rules'] as $css_property => $css_value ) {
-								$declarations[]  = array(
+								$declarations[] = array(
 									'name'  => $css_property,
 									'value' => $css_value,
 								);

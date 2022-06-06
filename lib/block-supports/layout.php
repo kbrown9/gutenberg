@@ -107,7 +107,7 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 			if ( $gap_value && ! $should_skip_gap_serialization ) {
 				$style .= "$selector {";
 				$style .= "gap: $gap_value;";
-				$style .= "}";
+				$style .= '}';
 			}
 		}
 
@@ -120,13 +120,13 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 			if ( ! empty( $layout['justifyContent'] ) && array_key_exists( $layout['justifyContent'], $justify_content_options ) ) {
 				$style .= "$selector {";
 				$style .= "justify-content: {$justify_content_options[ $layout['justifyContent'] ]};";
-				$style .= "}";
+				$style .= '}';
 			}
 
 			if ( ! empty( $layout['verticalAlignment'] ) && array_key_exists( $layout['verticalAlignment'], $vertical_alignment_options ) ) {
 				$style .= "$selector {";
 				$style .= "align-items: {$vertical_alignment_options[ $layout['verticalAlignment'] ]};";
-				$style .= "}";
+				$style .= '}';
 			}
 		} else {
 			$style .= "$selector {";
@@ -136,7 +136,7 @@ function gutenberg_get_layout_style( $selector, $layout, $has_block_gap_support 
 			} else {
 				$style .= 'align-items: flex-start;';
 			}
-			$style .= "}";
+			$style .= '}';
 		}
 	}
 
@@ -241,7 +241,7 @@ function gutenberg_render_layout_support_flag( $block_content, $block ) {
 	$style                         = gutenberg_get_layout_style( ".$block_classname.$container_class", $used_layout, $has_block_gap_support, $gap_value, $should_skip_gap_serialization, $fallback_gap_value );
 
 	// Only add container class and enqueue block support styles if unique styles were generated.
-	if ( ! empty( $style) ) {
+	if ( ! empty( $style ) ) {
 		$class_names[] = $container_class;
 		gutenberg_enqueue_block_support_styles( $style );
 	}

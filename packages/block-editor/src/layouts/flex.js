@@ -11,7 +11,6 @@ import {
 	arrowDown,
 } from '@wordpress/icons';
 import { Button, ToggleControl, Flex, FlexItem } from '@wordpress/components';
-import { getBlockSupport } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -114,51 +113,52 @@ export default {
 		hasBlockGapSupport,
 	} ) {
 		const { orientation = 'horizontal' } = layout;
-		const fallbackValue =
-			getBlockSupport( blockName, [
-				'spacing',
-				'blockGap',
-				'__experimentalDefault',
-			] ) || '0.5em';
 
 		// If a block's block.json skips serialization for spacing or spacing.blockGap,
 		// don't apply the user-defined value to the styles.
 		const blockGapValue =
 			style?.spacing?.blockGap &&
 			! shouldSkipSerialization( blockName, 'spacing', 'blockGap' )
-				? `gap: ${ getGapCSSValue(
-						style?.spacing?.blockGap,
-						fallbackValue
-				  ) };`
-				: '';
-		const justifyContent =
-			justifyContentMap[ layout.justifyContent ] ||
-			justifyContentMap.left;
+				? getGapCSSValue( style?.spacing?.blockGap )
+				: undefined;
+		const justifyContent = justifyContentMap[ layout.justifyContent ];
 		const flexWrap = flexWrapOptions.includes( layout.flexWrap )
 			? layout.flexWrap
 			: 'wrap';
 		const verticalAlignment =
-			verticalAlignmentMap[ layout.verticalAlignment ] ||
-			verticalAlignmentMap.center;
-		const rowOrientation = `
-		flex-direction: row;
-		align-items: ${ verticalAlignment };
-		justify-content: ${ justifyContent };
-		`;
+			verticalAlignmentMap[ layout.verticalAlignment ];
 		const alignItems =
 			alignItemsMap[ layout.justifyContent ] || alignItemsMap.left;
-		const columnOrientation = `
-		flex-direction: column;
-		align-items: ${ alignItems };
-		`;
 
-		// TODO: Ensure we only append to the `output` string if values are non-default.
 		let output = '';
-		output = `${ appendSelectors( selector ) } {
-				flex-wrap: ${ flexWrap };
-				${ hasBlockGapSupport ? blockGapValue : 'gap: ' + fallbackValue };
-				${ orientation === 'horizontal' ? rowOrientation : columnOrientation }
+		const rules = [];
+
+		if ( hasBlockGapSupport && blockGapValue ) {
+			// TODO: Work out where to put the fallbackValue behaviour.
+			rules.push( `gap: ${ blockGapValue }` );
+		}
+
+		if ( flexWrap && flexWrap !== 'wrap' ) {
+			rules.push( flexWrap );
+		}
+
+		if ( orientation === 'horizontal' ) {
+			if ( verticalAlignment ) {
+				rules.push( `align-items: ${ verticalAlignment }` );
+			}
+			if ( justifyContent ) {
+				rules.push( `justify-content: ${ justifyContent }` );
+			}
+		} else {
+			rules.push( 'flex-direction: column' );
+			rules.push( `align-items: ${ alignItems }` );
+		}
+
+		if ( rules.length ) {
+			output = `${ appendSelectors( selector ) } {
+				${ rules.join( '; ' ) };
 			}`;
+		}
 		return output;
 	},
 	getOrientation( layout ) {

@@ -245,6 +245,7 @@ export default function VisualEditor( { styles } ) {
 							<LayoutStyle
 								selector=".edit-post-visual-editor__post-title-wrapper, .block-editor-block-list__layout.is-root-container"
 								layout={ defaultLayout }
+								layoutDefinitions={ defaultLayout?.definitions }
 							/>
 						) }
 						{ ! isTemplateMode && (

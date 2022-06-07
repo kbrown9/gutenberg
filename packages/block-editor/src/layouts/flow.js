@@ -113,6 +113,7 @@ export default {
 		style,
 		blockName,
 		hasBlockGapSupport,
+		layoutDefinitions,
 	} ) {
 		const { contentSize, wideSize } = layout;
 		const blockGapStyleValue = getGapBoxControlValueFromStyle(
@@ -146,19 +147,26 @@ export default {
 				`
 				: '';
 
-		if ( hasBlockGapSupport && blockGapValue ) {
-			output += `
-				${ appendSelectors( selector, '> *' ) } {
-					margin-block-start: 0;
-					margin-block-end: 0;
-				}
-			`;
-
-			output += `
-				${ appendSelectors( selector, '> * + *' ) } {
-					margin-block-start: ${ blockGapValue };
-				}
-			`;
+		// Output blockGap styles based on rules contained in layout definitions in theme.json
+		if (
+			hasBlockGapSupport &&
+			blockGapValue &&
+			layoutDefinitions.default?.blockGapStyles?.length
+		) {
+			layoutDefinitions.default.blockGapStyles.forEach( ( gapStyle ) => {
+				output += `
+					${ appendSelectors( selector, gapStyle.selector ) } {
+						${ Object.entries( gapStyle.rules )
+							.map(
+								( [ cssProperty, value ] ) =>
+									`${ cssProperty }: ${
+										value ? value : blockGapValue
+									}`
+							)
+							.join( '; ' ) };
+					}
+				`;
+			} );
 		}
 		return output;
 	},

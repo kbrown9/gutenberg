@@ -111,6 +111,7 @@ export default {
 		style,
 		blockName,
 		hasBlockGapSupport,
+		layoutDefinitions,
 	} ) {
 		const { orientation = 'horizontal' } = layout;
 
@@ -133,11 +134,6 @@ export default {
 		let output = '';
 		const rules = [];
 
-		if ( hasBlockGapSupport && blockGapValue ) {
-			// TODO: Work out where to put the fallbackValue behaviour.
-			rules.push( `gap: ${ blockGapValue }` );
-		}
-
 		if ( flexWrap && flexWrap !== 'wrap' ) {
 			rules.push( flexWrap );
 		}
@@ -158,6 +154,28 @@ export default {
 			output = `${ appendSelectors( selector ) } {
 				${ rules.join( '; ' ) };
 			}`;
+		}
+
+		// Output blockGap styles based on rules contained in layout definitions in theme.json
+		if (
+			hasBlockGapSupport &&
+			blockGapValue &&
+			layoutDefinitions.flex?.blockGapStyles?.length
+		) {
+			layoutDefinitions.flex.blockGapStyles.forEach( ( gapStyle ) => {
+				output += `
+					${ appendSelectors( selector, gapStyle.selector ) } {
+						${ Object.entries( gapStyle.rules )
+							.map(
+								( [ cssProperty, value ] ) =>
+									`${ cssProperty }: ${
+										value ? value : blockGapValue
+									}`
+							)
+							.join( '; ' ) };
+					}
+				`;
+			} );
 		}
 		return output;
 	},

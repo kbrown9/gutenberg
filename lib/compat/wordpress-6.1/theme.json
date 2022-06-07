@@ -187,7 +187,7 @@
 		},
 		"spacing": {
 			"blockGap": null,
-			"customSpacingSizes": true,
+			"customSpacingSize": true,
 			"units": [ "px", "em", "rem", "vh", "vw", "%" ],
 			"spacingSizes": [
 				{

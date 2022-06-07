@@ -265,28 +265,47 @@ export const withLayoutStyles = createHigherOrderComponent(
 		const layoutType = usedLayout?.type || 'default';
 		const layoutClassName =
 			defaultThemeLayout?.definitions?.[ layoutType ]?.className || '';
+		const selector = `.${ getBlockDefaultClassName(
+			name
+		) }.wp-container-${ id }`;
+		const blockGapSupport = useSetting( 'spacing.blockGap' );
+		const hasBlockGapSupport = blockGapSupport !== null;
+
+		// Get CSS string for the current layout type.
+		// The CSS and `style` element is only output if it is not empty.
+		let css;
+		if ( shouldRenderLayoutStyles ) {
+			const fullLayoutType = getLayoutType( layoutType );
+			css = fullLayoutType?.getLayoutStyle?.( {
+				blockName: name,
+				selector,
+				layout: usedLayout,
+				layoutDefinitions: defaultThemeLayout?.definitions,
+				style: attributes?.style,
+				hasBlockGapSupport,
+			} );
+		}
 
 		// Attach a `wp-container-` id-based class name as well as a layout class name such as `is-layout-flex`.
 		const className = classnames(
 			props?.className,
 			{
-				[ `wp-container-${ id }` ]: shouldRenderLayoutStyles,
+				[ `wp-container-${ id }` ]: shouldRenderLayoutStyles && !! css, // Only attach a container class if there is generated CSS to be attached.
 				[ layoutClassName ]: shouldRenderLayoutStyles,
 			},
 			layoutClasses
 		);
-		const selector = `.${ getBlockDefaultClassName(
-			name
-		) }.wp-container-${ id }`;
 
 		return (
 			<>
 				{ shouldRenderLayoutStyles &&
 					element &&
+					!! css &&
 					createPortal(
 						<LayoutStyle
 							blockName={ name }
 							selector={ selector }
+							css={ css }
 							layout={ usedLayout }
 							style={ attributes?.style }
 						/>,

@@ -18,7 +18,6 @@ import { getBlockSupport } from '@wordpress/blocks';
  */
 import { appendSelectors } from './utils';
 import { getGapCSSValue } from '../hooks/gap';
-import useSetting from '../components/use-setting';
 import {
 	BlockControls,
 	JustifyContentControl,
@@ -107,9 +106,14 @@ export default {
 			</BlockControls>
 		);
 	},
-	save: function FlexLayoutStyle( { selector, layout, style, blockName } ) {
+	getLayoutStyle: function getLayoutStyle( {
+		selector,
+		layout,
+		style,
+		blockName,
+		hasBlockGapSupport,
+	} ) {
 		const { orientation = 'horizontal' } = layout;
-		const blockGapSupport = useSetting( 'spacing.blockGap' );
 		const fallbackValue =
 			getBlockSupport( blockName, [
 				'spacing',
@@ -117,7 +121,6 @@ export default {
 				'__experimentalDefault',
 			] ) || '0.5em';
 
-		const hasBlockGapStylesSupport = blockGapSupport !== null;
 		// If a block's block.json skips serialization for spacing or spacing.blockGap,
 		// don't apply the user-defined value to the styles.
 		const blockGapValue =
@@ -149,20 +152,14 @@ export default {
 		align-items: ${ alignItems };
 		`;
 
-		return (
-			<style>{ `
-				${ appendSelectors( selector ) } {
-					display: flex;
-					flex-wrap: ${ flexWrap };
-					${ hasBlockGapStylesSupport ? blockGapValue : 'gap: ' + fallbackValue };
-					${ orientation === 'horizontal' ? rowOrientation : columnOrientation }
-				}
-
-				${ appendSelectors( selector, '> *' ) } {
-					margin: 0;
-				}
-			` }</style>
-		);
+		// TODO: Ensure we only append to the `output` string if values are non-default.
+		let output = '';
+		output = `${ appendSelectors( selector ) } {
+				flex-wrap: ${ flexWrap };
+				${ hasBlockGapSupport ? blockGapValue : 'gap: ' + fallbackValue };
+				${ orientation === 'horizontal' ? rowOrientation : columnOrientation }
+			}`;
+		return output;
 	},
 	getOrientation( layout ) {
 		const { orientation = 'horizontal' } = layout;

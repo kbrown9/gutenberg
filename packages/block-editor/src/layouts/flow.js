@@ -107,15 +107,14 @@ export default {
 	toolBarControls: function DefaultLayoutToolbarControls() {
 		return null;
 	},
-	save: function DefaultLayoutStyle( {
+	getLayoutStyle: function getLayoutStyle( {
 		selector,
 		layout = {},
 		style,
 		blockName,
+		hasBlockGapSupport,
 	} ) {
 		const { contentSize, wideSize } = layout;
-		const blockGapSupport = useSetting( 'spacing.blockGap' );
-		const hasBlockGapStylesSupport = blockGapSupport !== null;
 		const blockGapStyleValue = getGapBoxControlValueFromStyle(
 			style?.spacing?.blockGap
 		);
@@ -147,25 +146,7 @@ export default {
 				`
 				: '';
 
-		output += `
-			${ appendSelectors( selector, '> .alignleft' ) } {
-				float: left;
-				margin-inline-start: 0;
-				margin-inline-end: 2em;
-			}
-			${ appendSelectors( selector, '> .alignright' ) } {
-				float: right;
-				margin-inline-start: 2em;
-				margin-inline-end: 0;
-			}
-
-			${ appendSelectors( selector, '> .aligncenter' ) } {
-				margin-left: auto !important;
-				margin-right: auto !important;
-			}
-		`;
-
-		if ( hasBlockGapStylesSupport && blockGapValue ) {
+		if ( hasBlockGapSupport && blockGapValue ) {
 			output += `
 				${ appendSelectors( selector, '> *' ) } {
 					margin-block-start: 0;
@@ -179,8 +160,7 @@ export default {
 				}
 			`;
 		}
-
-		return <style>{ output }</style>;
+		return output;
 	},
 	getOrientation() {
 		return 'vertical';

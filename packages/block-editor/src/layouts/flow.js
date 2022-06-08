@@ -13,7 +13,7 @@ import { Icon, positionCenter, stretchWide } from '@wordpress/icons';
  * Internal dependencies
  */
 import useSetting from '../components/use-setting';
-import { appendSelectors } from './utils';
+import { appendSelectors, getBlockGapCSS } from './utils';
 import { getGapBoxControlValueFromStyle } from '../hooks/gap';
 import { shouldSkipSerialization } from '../hooks/utils';
 
@@ -147,26 +147,14 @@ export default {
 				`
 				: '';
 
-		// Output blockGap styles based on rules contained in layout definitions in theme.json
-		if (
-			hasBlockGapSupport &&
-			blockGapValue &&
-			layoutDefinitions.default?.blockGapStyles?.length
-		) {
-			layoutDefinitions.default.blockGapStyles.forEach( ( gapStyle ) => {
-				output += `
-					${ appendSelectors( selector, gapStyle.selector ) } {
-						${ Object.entries( gapStyle.rules )
-							.map(
-								( [ cssProperty, value ] ) =>
-									`${ cssProperty }: ${
-										value ? value : blockGapValue
-									}`
-							)
-							.join( '; ' ) };
-					}
-				`;
-			} );
+		// Output blockGap styles based on rules contained in layout definitions in theme.json.
+		if ( hasBlockGapSupport && blockGapValue ) {
+			output += getBlockGapCSS(
+				selector,
+				layoutDefinitions,
+				'default',
+				blockGapValue
+			);
 		}
 		return output;
 	},

@@ -15,7 +15,7 @@ import { Button, ToggleControl, Flex, FlexItem } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { appendSelectors } from './utils';
+import { appendSelectors, getBlockGapCSS } from './utils';
 import { getGapCSSValue } from '../hooks/gap';
 import {
 	BlockControls,
@@ -156,26 +156,14 @@ export default {
 			}`;
 		}
 
-		// Output blockGap styles based on rules contained in layout definitions in theme.json
-		if (
-			hasBlockGapSupport &&
-			blockGapValue &&
-			layoutDefinitions.flex?.blockGapStyles?.length
-		) {
-			layoutDefinitions.flex.blockGapStyles.forEach( ( gapStyle ) => {
-				output += `
-					${ appendSelectors( selector, gapStyle.selector ) } {
-						${ Object.entries( gapStyle.rules )
-							.map(
-								( [ cssProperty, value ] ) =>
-									`${ cssProperty }: ${
-										value ? value : blockGapValue
-									}`
-							)
-							.join( '; ' ) };
-					}
-				`;
-			} );
+		// Output blockGap styles based on rules contained in layout definitions in theme.json.
+		if ( hasBlockGapSupport && blockGapValue ) {
+			output += getBlockGapCSS(
+				selector,
+				layoutDefinitions,
+				'flex',
+				blockGapValue
+			);
 		}
 		return output;
 	},

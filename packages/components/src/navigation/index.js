@@ -27,6 +27,7 @@ export default function Navigation( {
 	onActivateMenu = noop,
 } ) {
 	const [ menu, setMenu ] = useState( activeMenu );
+	const menuRef = useRef( activeMenu );
 	const [ slideOrigin, setSlideOrigin ] = useState();
 	const navigationTree = useCreateNavigationTree();
 	const defaultSlideOrigin = isRTL() ? 'right' : 'left';
@@ -50,7 +51,11 @@ export default function Navigation( {
 	}, [] );
 
 	useEffect( () => {
-		if ( activeMenu !== menu ) {
+		menuRef.current = menu;
+	}, [ menu ] );
+
+	useEffect( () => {
+		if ( activeMenu !== menuRef.current ) {
 			setActiveMenu( activeMenu );
 		}
 	}, [ activeMenu ] );

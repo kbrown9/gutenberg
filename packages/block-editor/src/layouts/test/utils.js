@@ -62,7 +62,7 @@ describe( 'getBlockGapCSS', () => {
 		expect( result ).toBe( expected );
 	} );
 
-	it( 'should return empty string if layout type cannot be found', () => {
+	it( 'should return an empty string if layout type cannot be found', () => {
 		const expected = '';
 
 		const result = getBlockGapCSS(
@@ -75,7 +75,20 @@ describe( 'getBlockGapCSS', () => {
 		expect( result ).toBe( expected );
 	} );
 
-	it( 'should return empty string if blockGap is empty', () => {
+	it( 'should return an empty string if layout definitions cannot be found', () => {
+		const expected = '';
+
+		const result = getBlockGapCSS(
+			'.my-container',
+			undefined,
+			'flex',
+			'3em'
+		);
+
+		expect( result ).toBe( expected );
+	} );
+
+	it( 'should return an empty string if blockGap is empty', () => {
 		const expected = '';
 
 		const result = getBlockGapCSS(

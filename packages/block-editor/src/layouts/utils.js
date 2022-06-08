@@ -26,6 +26,8 @@ export function appendSelectors( selectors, append = '' ) {
 
 /**
  * Get generated blockGap CSS rules based on layout definitions provided in theme.json
+ * Falsy values in the layout definition's blockGapStyles rules will be swapped out
+ * with the provided `blockGapValue`.
  *
  * @param {string} selector          The CSS selector to target for the generated rules.
  * @param {Object} layoutDefinitions Layout definitions object from theme.json.
@@ -41,7 +43,7 @@ export function getBlockGapCSS(
 ) {
 	let output = '';
 	if (
-		layoutDefinitions[ layoutType ]?.blockGapStyles?.length &&
+		layoutDefinitions?.[ layoutType ]?.blockGapStyles?.length &&
 		blockGapValue
 	) {
 		layoutDefinitions[ layoutType ].blockGapStyles.forEach(

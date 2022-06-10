@@ -81,6 +81,7 @@ module.exports = {
 						importNames: [
 							'differenceWith',
 							'findIndex',
+							'isFinite',
 							'isUndefined',
 							'memoize',
 							'negate',

@@ -413,12 +413,14 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 			static::ROOT_BLOCK_SELECTOR !== $selector &&
 			$has_block_gap_support &&
 			$has_block_gap_value &&
-			! empty( $metadata['name'] )
+			! empty( $block_metadata['name'] )
 		) {
-			$block_rules .= $this->get_layout_styles( $metadata );
+			$block_rules .= $this->get_layout_styles( $block_metadata );
 		}
 
 		if ( static::ROOT_BLOCK_SELECTOR === $selector ) {
+			$block_gap_value = _wp_array_get( $this->theme_json, array( 'styles', 'spacing', 'blockGap' ), '0.5em' );
+
 			$block_rules .= '.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }';
 			$block_rules .= '.wp-site-blocks > .alignright { float: right; margin-left: 2em; }';
 			$block_rules .= '.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }';
@@ -430,7 +432,7 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON_6_0 {
 				// For backwards compatibility, ensure the legacy block gap CSS variable is still available.
 				$block_rules .= "$selector { --wp--style--block-gap: $block_gap_value; }";
 			}
-			$block_rules .= $this->get_layout_styles( $metadata );
+			$block_rules .= $this->get_layout_styles( $block_metadata );
 		}
 
 		return $block_rules;

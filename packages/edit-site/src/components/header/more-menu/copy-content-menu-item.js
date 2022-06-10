@@ -49,5 +49,5 @@ export default function CopyContentMenuItem() {
 
 	const ref = useCopyToClipboard( getText, onSuccess );
 
-	return <MenuItem ref={ ref }>{ __( 'Copy all block content' ) }</MenuItem>;
+	return <MenuItem ref={ ref }>{ __( 'Copy all blocks' ) }</MenuItem>;
 }
